@@ -2,7 +2,7 @@ databases:
   - name: siem-db
     plan: free
     databaseName: siem
-    user: postgres
+    user: siem_admin
 
 services:
   # 1. Spring Boot Backend Service (Dockerized)
@@ -14,13 +14,15 @@ services:
     plan: free
     envVars:
       - key: DATABASE_URL
+        value: jdbc:postgresql://siem-db:5432/siem
+      - key: DATABASE_USERNAME
         fromDatabase:
           name: siem-db
-          property: connectionString
-      - key: DATABASE_USERNAME
-        value: postgres
+          property: user
       - key: DATABASE_PASSWORD
-        value: postgrespassword
+        fromDatabase:
+          name: siem-db
+          property: password
       - key: REDIS_HOST
         fromService:
           type: redis
@@ -59,10 +61,7 @@ services:
     plan: free
     envVars:
       - key: VITE_API_BASE_URL
-        fromService:
-          type: web
-          name: siem-backend
-          property: url
+        value: https://siem-backend.onrender.com
     routes:
       - type: rewrite
         source: /*
