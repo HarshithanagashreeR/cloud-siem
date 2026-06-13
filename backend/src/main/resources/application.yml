@@ -1,0 +1,55 @@
+spring:
+  application:
+    name: cloud-siem
+  threads:
+    virtual:
+      enabled: true # Enable Project Loom Virtual Threads for Tomcat
+
+  datasource:
+    url: ${DATABASE_URL:jdbc:postgresql://localhost:5432/siem}
+    username: ${DATABASE_USERNAME:postgres}
+    password: ${DATABASE_PASSWORD:postgres}
+    driver-class-name: org.postgresql.Driver
+  
+  jpa:
+    hibernate:
+      ddl-auto: update
+    show-sql: false
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.PostgreSQLDialect
+        jdbc:
+          batch_size: 50
+        order_inserts: true
+        order_updates: true
+
+  data:
+    redis:
+      host: ${REDIS_HOST:localhost}
+      port: ${REDIS_PORT:6379}
+      password: ${REDIS_PASSWORD:}
+
+# JWT configurations
+siem:
+  jwt:
+    secret: ${JWT_SECRET:404E635266556A586E3272357538782F413F4428472B4B6250645367566B5970} # 256-bit Hex Encoded Secret Key
+    expirationMs: 3600000 # 1 hour
+    refreshExpirationMs: 86400000 # 24 hours
+
+# AWS Configurations
+aws:
+  region: ${AWS_REGION:us-east-1}
+  s3:
+    bucket-name: ${AWS_S3_BUCKET:siem-reports-bucket}
+  sns:
+    topic-arn: ${AWS_SNS_TOPIC_ARN:arn:aws:sns:us-east-1:123456789012:SiemAlertsTopic}
+  credentials:
+    access-key-id: ${AWS_ACCESS_KEY_ID:mock_key}
+    secret-access-key: ${AWS_SECRET_ACCESS_KEY:mock_secret}
+
+# AI Security Analyst Configuration
+ai:
+  provider: ${AI_PROVIDER:gemini} # gemini or openai
+  api-key: ${AI_API_KEY:mock_ai_key}
+  model: ${AI_MODEL:gemini-1.5-flash}
+  api-url: ${AI_API_URL:https://generativelanguage.googleapis.com/v1beta/models}
