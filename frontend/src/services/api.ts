@@ -1,4 +1,11 @@
-const API_BASE_URL = 'http://localhost:8080/api/v1';
+let baseUrl = import.meta.env.VITE_API_BASE_URL || 'http://localhost:8080';
+if (!baseUrl.endsWith('/api/v1')) {
+  if (baseUrl.endsWith('/')) {
+    baseUrl = baseUrl.slice(0, -1);
+  }
+  baseUrl = `${baseUrl}/api/v1`;
+}
+const API_BASE_URL = baseUrl;
 
 async function request<T>(path: string, options: RequestInit = {}): Promise<T> {
   const token = localStorage.getItem('siem_token');
